@@ -1,13 +1,10 @@
 // user-service/controllers/user.controller.js
 const User = require("../models/user.model");
 
-exports.createUser = async (req, res) => {
-    try {
-        const user = await User.create(req.body);
-        res.status(201).json(user);
-    } catch (err) {
-        res.status(400).json({ error: err.message });
-    }
+
+exports.createUser = async (req, res, next) => {
+    const user = await User.create(req.body);
+    res.status(201).json(user);
 };
 
 exports.getAllUsers = async (req, res) => {
@@ -15,15 +12,14 @@ exports.getAllUsers = async (req, res) => {
     res.json(users);
 };
 
-exports.getMyprofile = async (req, res) => {
-    try{
+exports.getMyProfile = async (req, res, next) => {
         const user = await User.findById(req.user.userId).select("-password");
         //.select("-password") omits the password from response
+        if(!user){
+            const err = new Error("User Not Found");
+            err.statusCode = 404;
+            return next(err);
+        }
 
-        if(!user) return res.status(404).json({ error: "User not found" });
         res.json(user);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-
 }

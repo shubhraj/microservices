@@ -4,6 +4,7 @@ const mongoose = require("mongoose");
 require("dotenv").config();
 
 const logger = require("./utils/logger");
+const errorHandler = require("./middleware/error.middleware");
 
 const app = express();
 app.use(express.json());
@@ -24,3 +25,5 @@ mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopol
         app.listen(3001, () => logger.info("User Service running on port 3001"));
     })
     .catch(err => console.error(err));
+
+app.use(errorHandler);
