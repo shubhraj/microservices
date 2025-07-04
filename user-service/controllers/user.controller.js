@@ -1,5 +1,6 @@
 // user-service/controllers/user.controller.js
 const User = require("../models/user.model");
+const {Error} = require("mongoose");
 
 
 exports.createUser = async (req, res, next) => {
@@ -22,4 +23,30 @@ exports.getMyProfile = async (req, res, next) => {
         }
 
         res.json(user);
+}
+
+exports.updateMyProfile = async (req, res, next) => {
+    const updates = req.body;
+    const allowedFields = ['username', 'profilePic', 'preferences'];
+    const updateKeys = Object.keys(updates);
+    const isValid = updateKeys.every((key) => allowedFields.includes(key));
+    if(!isValid) {
+        const err = new Error("Invalid fields in request");
+        err.statusCode = 400;
+        return next(err);
+    }
+
+    const user = await User.findByIdAndUpdate(
+        req.user.userId,
+        { $set: updates },
+        { new: true, runValidators: true }
+    ).select("-password");
+
+    if(!user) {
+        const err = new Error('User Not Found');
+        err.statusCode = 404;
+        return next(err);
+    }
+
+    res.json({ message: "Profile updated", user });
 }
