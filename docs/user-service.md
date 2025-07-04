@@ -35,6 +35,8 @@ user-service/
 │   └── user.routes.js
 ├── utils/
 │   └── logger.js
+├── validators/
+│   └── user.validator.js
 ├── server.js
 ├── .env
 ```
@@ -72,6 +74,7 @@ user-service/
   - `preferences.genres`
   - `preferences.language`
 - Only whitelisted fields are allowed
+- **Input validated** using `express-validator`
 
 ---
 
