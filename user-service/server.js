@@ -6,6 +6,8 @@ require("dotenv").config();
 const logger = require("./utils/logger");
 const errorHandler = require("./middleware/error.middleware");
 
+const PORT = process.env.PORT || 5000;
+
 const app = express();
 app.use(express.json());
 
@@ -22,7 +24,7 @@ app.use("/", (req, res) => {
 mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
     .then(() => {
         logger.info("MongoDB connected");
-        app.listen(3001, () => logger.info("User Service running on port 3001"));
+        app.listen(PORT, '0.0.0.0',() => logger.info(`User Service running on port ${PORT}`));
     })
     .catch(err => console.error(err));
 
