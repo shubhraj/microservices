@@ -22,9 +22,15 @@ app.use("/api/users", userRoutes);
 const authRoutes = require("./routes/auth.routes");
 app.use("/api/auth", authRoutes);
 
+app.use("/health", (req, res) => {
+    //adding this to check proxy request from api-gateway
+    res.json({status: "health route tests"});
+});
+
 app.use("/", (req, res) => {
-      res.send("hello there");
-})
+      console.log("req / :" + req);
+      res.json({status: "route / is default"})
+});
 
 mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
     .then(() => {
