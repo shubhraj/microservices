@@ -17,4 +17,9 @@ router.post("/login",authRateLimiter,
     ],
     login);
 
+router.use("/health", (req, res) => {
+    console.log("User service Health Check");
+    res.json({status: "User service Health Check Pass"})
+});
+
 module.exports = router;
