@@ -5,6 +5,7 @@ require('dotenv').config();
 const app = express();
 const PORT = process.env.PORT || 8080;
 
+app.use(express.json());
 // Logging
 app.use((req, res, next) => {
     console.log(`[GATEWAY] ${req.method} ${req.originalUrl}`);
@@ -22,6 +23,18 @@ app.use('/api/auth', createProxyMiddleware({
     onError: (err, req, res) => {
         console.error('[Proxy Error]', err.message);
         res.status(500).json({ error: 'Proxy failed' });
+    }
+}));
+
+app.use('/api/movies', createProxyMiddleware({
+    target: process.env.MOVIE_SERVICE_URL || 'http://localhost:5002', // or whichever port your Movie Service runs on
+    changeOrigin: true,
+    pathRewrite: (path, req) => {
+        return req.originalUrl;
+    },
+    onError: (err, req, res) => {
+        console.error('[Proxy Error - Movie Service]', err.message);
+        res.status(500).json({ error: 'Movie Service is unavailable' });
     }
 }));
 
