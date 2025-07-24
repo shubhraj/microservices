@@ -5,8 +5,10 @@ const { body } = require('express-validator');
 const {verifyToken } = require('../middleware/auth.middleware');
 
 router.get('/health', (req, res)=>{
+    console.log("request is here : " +req);
     res.send("movie service /api/movies/health is good");
 });
+
 router.get('/', getMovies);
 
 router.post('/',
