@@ -1,8 +1,9 @@
 const express = require('express');
 const router = express.Router();
-const { getMovies, addMovie } = require('../controller/movie.controller');
+const { getMovies, addMovie, getMovieById, updateMovie, deleteMovie } = require('../controller/movie.controller');
 const { body } = require('express-validator');
 const {verifyToken } = require('../middleware/auth.middleware');
+const {route} = require("express/lib/application");
 
 router.get('/health', (req, res)=>{
     console.log("request is here : " +req);
@@ -18,5 +19,11 @@ router.post('/',
     ],
     addMovie
 );
+
+router.get('/:id', getMovieById);
+
+router.put('/:id', updateMovie);
+
+router.delete('/:id', deleteMovie);
 
 module.exports = router;
