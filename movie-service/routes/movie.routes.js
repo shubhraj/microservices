@@ -4,6 +4,7 @@ const { getMovies, addMovie, getMovieById, updateMovie, deleteMovie } = require(
 const { body } = require('express-validator');
 const {verifyToken } = require('../middleware/auth.middleware');
 const {route} = require("express/lib/application");
+const authorizeRole = require('../middleware/authorizeRole');
 
 router.get('/health', (req, res)=>{
     console.log("request is here : " +req);
@@ -24,6 +25,6 @@ router.get('/:id', getMovieById);
 
 router.put('/:id', updateMovie);
 
-router.delete('/:id', deleteMovie);
+router.delete('/:id',verifyToken ,authorizeRole('admin') , deleteMovie);
 
 module.exports = router;
