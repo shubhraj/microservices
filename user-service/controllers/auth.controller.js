@@ -13,7 +13,7 @@ exports.register = async (req, res, next) => {
     if (!errors.isEmpty())
         return res.status(400).json({ errors: errors.array() });
 
-        const { username, email, password } = req.body;
+        const { username, email, password, role } = req.body;
         const exists = await User.findOne({ email });
         if (exists) {
             const err = new Error("User already exists");
@@ -23,7 +23,7 @@ exports.register = async (req, res, next) => {
 
         const hashedPwd = await bcrypt.hash(password, 10);
 
-        const user = await User.create({ username, email, password: hashedPwd });
+        const user = await User.create({ username, email, password: hashedPwd, role: role });
 
         res.status(201).json({ message: "User registered", userId: user._id });
 
@@ -52,7 +52,7 @@ exports.login = async (req, res, next) => {
         return next(err);
     }
 
-    const token = jwt.sign({ userId: user._id, email: user.email }, SECRET_KEY, { expiresIn: "1h" });
+    const token = jwt.sign({ userId: user._id, email: user.email, role: user.role }, SECRET_KEY, { expiresIn: "1h" });
     logger.info(`Login successful for user ${email}`);
 
     res.json({ message: "Login successful", token });
