@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { getMovies, addMovie, getMovieById, updateMovie, deleteMovie } = require('../controller/movie.controller');
+const { getMovies, addMovie, getMovieById, updateMovie, deleteMovie, searchMovies} = require('../controller/movie.controller');
 const { body } = require('express-validator');
 const {verifyToken } = require('../middleware/auth.middleware');
 const {route} = require("express/lib/application");
@@ -23,8 +23,10 @@ router.post('/',
 
 router.get('/:id', getMovieById);
 
-router.put('/:id', updateMovie);
+router.put('/:id', verifyToken ,authorizeRole('admin'), updateMovie);
 
 router.delete('/:id',verifyToken ,authorizeRole('admin') , deleteMovie);
+
+router.get('/search', searchMovies);
 
 module.exports = router;
