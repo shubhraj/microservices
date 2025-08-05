@@ -46,3 +46,51 @@ exports.updateMovie = async (req, res) => {
         res.status(400).json({error: 'Invalid Data'});
     }
 }
+
+exports.searchMovies = async (req, res) => {
+    try {
+        const { title, genre, year, page = 1, limit = 10, sort } = req.query;
+
+        const query = {};
+
+        if (title) {
+            query.title = { $regex: new RegExp(title, 'i') };
+        }
+
+        if (genre) {
+            query.genre = { $regex: new RegExp(genre, 'i') };
+        }
+
+        if (year) {
+            query.year = Number(year);
+        }
+
+        const skip = (page - 1) * limit;
+
+        // Prepare sort options
+        let sortOptions = {};
+        if (sort) {
+            const sortField = sort.startsWith('-') ? sort.slice(1) : sort;
+            const sortOrder = sort.startsWith('-') ? -1 : 1;
+            sortOptions[sortField] = sortOrder;
+        }
+
+        const movies = await Movie.find(query)
+            .sort(sortOptions)
+            .skip(skip)
+            .limit(Number(limit));
+
+        const total = await Movie.countDocuments(query);
+
+        res.json({
+            total,
+            page: Number(page),
+            limit: Number(limit),
+            totalPages: Math.ceil(total / limit),
+            results: movies,
+        });
+    } catch (error) {
+        console.error('Search error:', error);
+        res.status(500).json({ message: 'Search failed' });
+    }
+};
