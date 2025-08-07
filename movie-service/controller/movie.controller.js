@@ -94,3 +94,22 @@ exports.searchMovies = async (req, res) => {
         res.status(500).json({ message: 'Search failed' });
     }
 };
+
+exports.createMovie = async (req, res) => {
+    try {
+        const { title, genre, year } = req.body;
+        const posterPath = req.file ? req.file.path : null;
+
+        const newMovie = new Movie({
+            title,
+            genre,
+            year,
+            poster: posterPath, // store relative path to DB
+        });
+
+        await newMovie.save();
+        res.status(201).json(newMovie);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};

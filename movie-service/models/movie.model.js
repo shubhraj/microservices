@@ -3,7 +3,8 @@ const movieSchema = new mongoose.Schema({
     title: {type: String, require: true},
     genre: String,
     releaseYear: Number,
-    createdAt: {type: Date, default: Date.now}
+    createdAt: {type: Date, default: Date.now},
+    poster: { type: String },
 })
 
 module.exports = mongoose.model('Movie', movieSchema);
