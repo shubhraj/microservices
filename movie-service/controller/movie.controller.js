@@ -1,6 +1,6 @@
 const Movie = require('../models/movie.model');
 const { validationResult } = require('express-validator');
-
+const Review = require('../models/review.model');
 exports.getMovies = async (req, res) => {
     const movies = await Movie.find().sort({ createdAt: -1 });
     res.json(movies);
@@ -111,5 +111,28 @@ exports.createMovie = async (req, res) => {
         res.status(201).json(newMovie);
     } catch (error) {
         res.status(500).json({ error: error.message });
+    }
+};
+
+exports.movieReviews =  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
+
+    const { movieId } = req.params;
+    const { rating, comment } = req.body;
+
+    try {
+        const review = new Review({
+            movieId,
+            userId: req.user.userId,
+            rating,
+            comment,
+        });
+
+        await review.save();
+        res.status(201).json(review);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).json({ error: 'Server error' });
     }
 };
