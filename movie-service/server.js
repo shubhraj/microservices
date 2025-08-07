@@ -2,12 +2,14 @@ const express = require('express');
 const mongoose = require('mongoose');
 require('dotenv').config();
 const cors = require('cors');
+const path = require("path");
 
 const app = express();
 app.use(cors());
-app.use(express.json());
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 const movieRoutes = require('./routes/movie.routes');
+app.use(express.json());
 app.use('/api/movies', movieRoutes);
 
 app.get('/', (req, res) => res.send('🎬 Movie Service Running'));
