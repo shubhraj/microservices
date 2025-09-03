@@ -56,3 +56,20 @@ exports.updateMyProfile = async (req, res, next) => {
 
     res.json({ message: "Profile updated", user });
 };
+
+exports.getUserById = async (req, res, next) => {
+    try {
+        const user = await User.findById(req.params.id).select("name email");
+        if(!user) {
+            return res.status(404).json({message: "user Not Found"});
+        }
+
+        res.json({
+            id: user._id,
+            name: user._doc.name,
+            email: user.email,
+        });
+    } catch (error) {
+        res.status(500).json({message: 'server error'});
+    }
+}

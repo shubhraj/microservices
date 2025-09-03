@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const { getMovies, addMovie, getMovieById, updateMovie, deleteMovie, searchMovies, createMovie, movieReviews} = require('../controller/movie.controller');
+const { getMovies, addMovie, getMovieById, updateMovie, deleteMovie, searchMovies, createMovie, movieReviews,
+    moviewReviewWithUserDetails
+} = require('../controller/movie.controller');
 const { body } = require('express-validator');
 const {verifyToken } = require('../middleware/auth.middleware');
 const {route} = require("express/lib/application");
@@ -8,6 +10,7 @@ const authorizeRole = require('../middleware/authorizeRole');
 const upload = require("../middleware/upload.middleware");
 const Review = require('../models/review.model');
 
+router.get('/:movieId/reviews', moviewReviewWithUserDetails);
 
 router.post("/", upload.single("poster"), createMovie);
 
