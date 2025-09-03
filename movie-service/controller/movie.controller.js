@@ -1,9 +1,12 @@
 const Movie = require('../models/movie.model');
 const { validationResult } = require('express-validator');
 const Review = require('../models/review.model');
+const axios = require('axios');
+
 exports.getMovies = async (req, res) => {
     const movies = await Movie.find().sort({ createdAt: -1 });
-    res.json(movies);
+    const review = await Review.find().sort({ createdAt: -1 });
+    res.json({movies, review});
 };
 
 exports.addMovie = async (req, res) => {
@@ -136,3 +139,37 @@ exports.movieReviews =  async (req, res) => {
         res.status(500).json({ error: 'Server error' });
     }
 };
+
+exports.moviewReviewWithUserDetails = async (req, res, next) => {
+    try {
+        const reviews = await Review.find({ movieId: req.params.movieId });
+
+        // Fetch user details for each review
+        const reviewsWithUser = await Promise.all(
+            reviews.map(async (review) => {
+                try {
+
+                    const userResponse = await axios.get(
+                        `http://localhost:5000/api/users/${review.userId}`
+                    );
+
+                    console.log(userResponse);
+                    return {
+                        ...review.toObject(),
+                        user: userResponse.data, // attach user details
+                    };
+                } catch (err) {
+                    // if user service fails, fallback to just userId
+                    return {
+                        ...review.toObject(),
+                        user: { _id: review.userId, name: "Unknown User" },
+                    };
+                }
+            })
+        );
+
+        res.json(reviewsWithUser);
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+}

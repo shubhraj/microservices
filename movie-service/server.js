@@ -12,6 +12,8 @@ const movieRoutes = require('./routes/movie.routes');
 app.use(express.json());
 app.use('/api/movies', movieRoutes);
 
+// const movieReviews = require('./routes/review.routes');
+// app.use('/api/reviews', movieReviews);
 app.get('/', (req, res) => res.send('🎬 Movie Service Running'));
 
 const PORT = process.env.PORT || 5002;
