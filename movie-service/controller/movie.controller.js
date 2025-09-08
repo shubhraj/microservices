@@ -141,6 +141,8 @@ exports.movieReviews =  async (req, res) => {
 };
 
 exports.moviewReviewWithUserDetails = async (req, res, next) => {
+    const GATEWAY_URL = process.env.GATEWAY_URL || "http://localhost:8080";
+
     try {
         const reviews = await Review.find({ movieId: req.params.movieId });
 
@@ -150,7 +152,7 @@ exports.moviewReviewWithUserDetails = async (req, res, next) => {
                 try {
 
                     const userResponse = await axios.get(
-                        `http://localhost:5000/api/users/${review.userId}`
+                        `${GATEWAY_URL}/api/users/${review.userId}`
                     );
 
                     console.log(userResponse);
