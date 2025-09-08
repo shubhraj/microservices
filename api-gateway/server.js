@@ -7,6 +7,9 @@ const PORT = process.env.PORT || 8080;
 
 app.use(express.json());
 // Logging
+app.get("/health", (req, res) => {
+    res.send('up and running');
+})
 app.use((req, res, next) => {
     console.log(`[GATEWAY] ${req.method} ${req.originalUrl}`);
     next();
@@ -37,6 +40,20 @@ app.use('/api/movies', createProxyMiddleware({
         res.status(500).json({ error: 'Movie Service is unavailable' });
     }
 }));
+
+app.use('/api/users',
+    createProxyMiddleware({
+        target: process.env.USER_SERVICE_URL || "http://localhost:5000",
+        changeOrigin: true,
+        pathRewrite: (path, req) => {
+            return req.originalUrl;
+        },
+        onError: (err, req, res) => {
+            console.error("[Gateway → UserService Error]", err.message);
+            res.status(500).json({ error: "User Service unavailable" });
+        },
+    })
+)
 
 app.listen(PORT, () => {
     console.log(`API Gateway running at http://localhost:${PORT}`);
